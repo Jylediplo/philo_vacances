@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 16:56:02 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/07/21 03:14:39 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/07/21 03:30:18 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,19 +72,20 @@ void	eat(t_philo *philo)
 
 
 
-	// pthread_mutex_lock(&philo->last_meal_m);
-	// long long c = current_timestamp() - philo->last_meal_t;
-	// if (c > 2147483647)
-	// 	c = 0;
-	// if (c + philo->stats->time_to_eat / 1000 > philo->stats->time_to_die / 1000)
-	// {
-	// 	lock_print(philo, "is deadddd");
-	// 	pthread_mutex_lock(philo->all_alive);
-	// 	*philo->alive = 0;
-	// 	pthread_mutex_unlock(philo->all_alive);
-	// }
-	// pthread_mutex_unlock(&philo->last_meal_m);
-	// lock_print(philo, "is eating");
+	pthread_mutex_lock(&philo->last_meal_m);
+	long long c = current_timestamp() - philo->last_meal_t;
+	if (c > 2147483647)
+		c = 0;
+	if ((c + philo->stats->time_to_eat / 1000 > philo->stats->time_to_die / 1000)
+		&& (philo->stats->time_to_die / 1000 > philo->stats->time_to_eat / 1000))
+	{
+		lock_print(philo, "is deadddd");
+		pthread_mutex_lock(philo->all_alive);
+		*philo->alive = 0;
+		pthread_mutex_unlock(philo->all_alive);
+	}
+	pthread_mutex_unlock(&philo->last_meal_m);
+	lock_print(philo, "is eating");
 
 
 
