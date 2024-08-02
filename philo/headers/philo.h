@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 15:46:40 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/08/02 19:00:32 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/02 23:56:22 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void				check_if_dead(t_philo **philo, int i,
 void				check_meals(t_philo **philo, int i, int nb_philo,
 						int *philos_that_ate);
 void				routine(t_philo *philo);
-void				wait_all_philos_to_start(t_philo *philo);
+int					wait_all_philos_to_start(t_philo *philo);
 void				destroy_forks(t_philo **philos, int nb_philo);
 void				free_malloc_fail(t_philo **philos, int nb_philos);
 int					initialise_mutex(t_mutex *mutex);
@@ -115,4 +115,5 @@ int					manage_args(t_stats *stats, int argc, char **argv);
 void				manage_state(t_philo *philo);
 void				init_stats(t_stats *stats, char **argv);
 void				destroy_mutex(t_mutex *mutex);
+int					clean_code(t_philo **philo, int i);
 #endif

@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 17:52:59 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/08/02 20:40:48 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/02 23:57:03 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ int	initialise_mutex(t_mutex *mutex)
 		return (free(mutex->mutex_print), free(mutex->dead), 1);
 	mutex->p_start = malloc(sizeof(pthread_mutex_t));
 	if (!mutex->p_start)
-		return (free(mutex->mutex_print), free(mutex->dead),
-			free(mutex->p_eat), 1);
+		return (free(mutex->mutex_print), free(mutex->dead), free(mutex->p_eat),
+			1);
 	mutex->wait_philo = malloc(sizeof(pthread_mutex_t));
 	if (!mutex->wait_philo)
-		return (free(mutex->mutex_print), free(mutex->dead),
-			free(mutex->p_eat), free(mutex->p_start), 1);
+		return (free(mutex->mutex_print), free(mutex->dead), free(mutex->p_eat),
+			free(mutex->p_start), 1);
 	pthread_mutex_init(mutex->mutex_print, NULL);
 	pthread_mutex_init(mutex->dead, NULL);
 	pthread_mutex_init(mutex->p_eat, NULL);
@@ -72,28 +72,36 @@ void	free_mutex(t_mutex *mutex)
 int	create_and_join(t_philo **philo, int nb_philo)
 {
 	int	i;
-	int	j;
 
-	j = 0;
 	i = 0;
 	while (i < nb_philo)
 	{
-		pthread_create(&philo[i]->thread, NULL, handler, (void *)philo[i]);
-		if (i == 2)
-		{
-			break;
-		}
+		if (pthread_create(&philo[i]->thread, NULL, handler,
+				(void *)philo[i]) != 0)
+			return (clean_code(philo, i));
 		i++;
 	}
-	if (i == nb_philo)
-		monitoring(philo, nb_philo);
-	else
-		printf("Error : creating thread\n");
-	//i = 0;
-	while (j < i -1)
+	i = 0;
+	monitoring(philo, nb_philo);
+	while (i < nb_philo)
 	{
+		pthread_join(philo[i]->thread, NULL);
+		i++;
+	}
+	return (0);
+}
+int	clean_code(t_philo **philo, int i)
+{
+	int	j;
+
+	j = 0;
+	while (j < i)
+	{
+		pthread_mutex_lock(philo[j]->all_alive);
+		*philo[j]->alive = 0;
+		pthread_mutex_unlock(philo[j]->all_alive);
 		pthread_join(philo[j]->thread, NULL);
 		j++;
 	}
-	return (0);
+	return (1);
 }

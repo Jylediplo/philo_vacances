@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/13 12:41:52 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/08/02 19:22:59 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/03 00:02:48 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ void	*handler(void *philo_thread)
 	pthread_mutex_lock(philo->m_wait);
 	philo->start = 1;
 	pthread_mutex_unlock(philo->m_wait);
-	wait_all_philos_to_start(philo);
+	if (!wait_all_philos_to_start(philo))
+		return (NULL);
 	while (1)
 	{
 		usleep(100);
@@ -69,16 +70,15 @@ void	create_thread(t_philo **philo, int nb_philo)
 {
 	t_mutex	mutex;
 	int		i;
-	int		result;
 
 	mutex.all_alive = 1;
 	mutex.all_eat = 0;
 	mutex.started = 0;
 	i = 0;
 	if (initialise_mutex(&mutex))
-		return (printf("Error malloc : initialising philos"), (void)0);
+		return (write(2, "Error malloc : initialising philos", 34), (void)0);
 	initialise_each_philo(&mutex, philo, nb_philo);
-	result = create_and_join(philo, nb_philo);
+	create_and_join(philo, nb_philo);
 	destroy_mutex(&mutex);
 	destroy_forks(philo, nb_philo);
 	free_mutex(&mutex);
@@ -105,15 +105,15 @@ int	main(int argc, char **argv)
 		return (1);
 	nb_philos = stats.nb_philo;
 	if (nb_philos < 1)
-		return (printf("Error wrong nb of philos\n"), 1);
+		return (write(2, "Error wrong nb of philos\n", 25), 1);
 	if (stats.meal_to_eat < 1 && stats.nb_params == 5)
-		return (printf("Error passing arguments eat\n"), 1);
+		return (write(2, "Error wrong number of meals\n", 28), 1);
 	all_philos = create_philos(nb_philos);
 	if (!all_philos)
-		return (printf("Error malloc creating philos\n"), 1);
+		return (write(2, "Error malloc creating philos\n", 29), 1);
 	init_philos(all_philos, nb_philos, &stats);
 	if (!init_forks(all_philos, nb_philos))
-		return (printf("Error malloc initialising forks\n"), 1);
+		return (write(2, "Error malloc initialising forks\n", 32), 1);
 	create_thread(all_philos, nb_philos);
 	free_philos(all_philos, nb_philos);
 	return (0);
