@@ -11,6 +11,7 @@ SRCS	=	./philo.c\
 ./routine.c\
 ./destroy.c\
 ./create_thread.c\
+./manage_state.c\
 
 
 OBJS	=	${SRCS:%.c=${OBJ_D}%.o}

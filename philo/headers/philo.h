@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 15:46:40 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/07/21 03:19:29 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/02 19:00:32 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int					take_fork(t_philo *philo);
 void				eat(t_philo *philo);
 void				lock_print(t_philo *philo, char *message);
 long long			current_timestamp(void);
-void				custom_usleep(int time_sleep);
+void				custom_usleep(int time_sleep, t_philo *philo);
 void				waiting_for_philo_ready(int nb_philo, t_philo **philo);
 int					ft_atol(const char *str);
 void				init_time(int nb_philo, t_philo **philo);
@@ -104,14 +104,15 @@ void				routine(t_philo *philo);
 void				wait_all_philos_to_start(t_philo *philo);
 void				destroy_forks(t_philo **philos, int nb_philo);
 void				free_malloc_fail(t_philo **philos, int nb_philos);
-int				initialise_mutex(t_mutex *mutex);
+int					initialise_mutex(t_mutex *mutex);
 void				free_mutex(t_mutex *mutex);
 void				initialise_each_philo(t_mutex *mutex, t_philo **philo,
 						int nb_philo);
-void				create_and_join(t_philo **philo, int nb_philo);
+int					create_and_join(t_philo **philo, int nb_philo);
 void				*handler(void *philo_thread);
 void				monitoring(t_philo **philo, int nb_philo);
 int					manage_args(t_stats *stats, int argc, char **argv);
+void				manage_state(t_philo *philo);
 void				init_stats(t_stats *stats, char **argv);
 void				destroy_mutex(t_mutex *mutex);
 #endif

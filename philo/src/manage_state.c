@@ -1,41 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time.c                                             :+:      :+:    :+:   */
+/*   manage_state.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/16 16:58:09 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/08/02 17:30:43 by lefabreg         ###   ########lyon.fr   */
+/*   Created: 2024/08/02 17:36:19 by lefabreg          #+#    #+#             */
+/*   Updated: 2024/08/02 17:50:21 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../headers/philo.h"
 
-long long	current_timestamp(void)
+void	manage_state(t_philo *philo)
 {
-	struct timeval	te;
-	long long		milliseconds;
+	long long	c;
 
-	gettimeofday(&te, NULL);
-	milliseconds = te.tv_sec * 1000 + te.tv_usec / 1000;
-	return (milliseconds);
-}
-
-void	custom_usleep(int time_sleep, t_philo *philo)
-{
-	long long	start;
-
-	start = current_timestamp();
-	while (current_timestamp() - start < time_sleep / 1000)
+	pthread_mutex_lock(&philo->last_meal_m);
+	c = current_timestamp() - philo->last_meal_t;
+	if (c > 2147483647)
+		c = 0;
+	if ((c + philo->stats->time_to_eat / 1000 > philo->stats->time_to_die
+			/ 1000) && (philo->stats->time_to_die
+			/ 1000 > philo->stats->time_to_eat / 1000))
 	{
+		lock_print(philo, "is dead");
 		pthread_mutex_lock(philo->all_alive);
-		if (*philo->alive == 0)
-		{
-			pthread_mutex_unlock(philo->all_alive);
-			break ;
-		}
+		*philo->alive = 0;
 		pthread_mutex_unlock(philo->all_alive);
-		usleep(150);
 	}
 }

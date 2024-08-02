@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 16:56:02 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/07/21 03:30:18 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/02 17:43:04 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,36 +69,14 @@ int	take_fork(t_philo *philo)
 
 void	eat(t_philo *philo)
 {
-
-
-
-	pthread_mutex_lock(&philo->last_meal_m);
-	long long c = current_timestamp() - philo->last_meal_t;
-	if (c > 2147483647)
-		c = 0;
-	if ((c + philo->stats->time_to_eat / 1000 > philo->stats->time_to_die / 1000)
-		&& (philo->stats->time_to_die / 1000 > philo->stats->time_to_eat / 1000))
-	{
-		lock_print(philo, "is deadddd");
-		pthread_mutex_lock(philo->all_alive);
-		*philo->alive = 0;
-		pthread_mutex_unlock(philo->all_alive);
-	}
+	manage_state(philo);
 	pthread_mutex_unlock(&philo->last_meal_m);
 	lock_print(philo, "is eating");
-
-
-
-	custom_usleep(philo->stats->time_to_eat);
-
-
+	custom_usleep(philo->stats->time_to_eat, philo);
 	pthread_mutex_lock(&philo->p_meal_eaten);
 	philo->meal_eaten += 1;
 	pthread_mutex_unlock(&philo->p_meal_eaten);
-	
 	pthread_mutex_lock(&philo->last_meal_m);
-
-	
 	philo->last_meal_t = current_timestamp();
 	pthread_mutex_unlock(&philo->last_meal_m);
 	pthread_mutex_lock(philo->fork->mutex);
@@ -108,18 +86,15 @@ void	eat(t_philo *philo)
 	philo->next->fork->value = 0;
 	pthread_mutex_unlock(philo->next->fork->mutex);
 	lock_print(philo, "is sleeping");
-	custom_usleep(philo->stats->time_to_sleep);
+	custom_usleep(philo->stats->time_to_sleep, philo);
 	lock_print(philo, "is thinking");
 }
 
 void	lock_print(t_philo *philo, char *message)
 {
-	
 	pthread_mutex_lock(philo->print);
 	pthread_mutex_lock(philo->all_alive);
 	pthread_mutex_lock(philo->p_ate_all_meal);
-
-	
 	if (*philo->alive && !(*philo->ate_all_meal))
 	{
 		pthread_mutex_lock(&philo->time);

@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/13 12:41:52 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/07/21 03:21:21 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/02 19:22:59 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	*handler(void *philo_thread)
 	}
 	lock_print(philo, "is thinking");
 	if (philo->rank % 2 == 0)
-		custom_usleep(philo->stats->time_to_eat);
+		custom_usleep(philo->stats->time_to_eat, philo);
 	return (routine(philo), NULL);
 }
 
@@ -68,14 +68,17 @@ void	monitoring(t_philo **philo, int nb_philo)
 void	create_thread(t_philo **philo, int nb_philo)
 {
 	t_mutex	mutex;
+	int		i;
+	int		result;
 
 	mutex.all_alive = 1;
 	mutex.all_eat = 0;
 	mutex.started = 0;
+	i = 0;
 	if (initialise_mutex(&mutex))
 		return (printf("Error malloc : initialising philos"), (void)0);
 	initialise_each_philo(&mutex, philo, nb_philo);
-	create_and_join(philo, nb_philo);
+	result = create_and_join(philo, nb_philo);
 	destroy_mutex(&mutex);
 	destroy_forks(philo, nb_philo);
 	free_mutex(&mutex);

@@ -6,7 +6,7 @@
 /*   By: lefabreg <lefabreg@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 17:52:59 by lefabreg          #+#    #+#             */
-/*   Updated: 2024/07/21 03:25:11 by lefabreg         ###   ########lyon.fr   */
+/*   Updated: 2024/08/02 20:40:48 by lefabreg         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,21 +69,31 @@ void	free_mutex(t_mutex *mutex)
 	free(mutex->p_start);
 }
 
-void	create_and_join(t_philo **philo, int nb_philo)
+int	create_and_join(t_philo **philo, int nb_philo)
 {
 	int	i;
+	int	j;
 
+	j = 0;
 	i = 0;
 	while (i < nb_philo)
 	{
 		pthread_create(&philo[i]->thread, NULL, handler, (void *)philo[i]);
+		if (i == 2)
+		{
+			break;
+		}
 		i++;
 	}
-	i = 0;
-	monitoring(philo, nb_philo);
-	while (i < nb_philo)
+	if (i == nb_philo)
+		monitoring(philo, nb_philo);
+	else
+		printf("Error : creating thread\n");
+	//i = 0;
+	while (j < i -1)
 	{
-		pthread_join(philo[i]->thread, NULL);
-		i++;
+		pthread_join(philo[j]->thread, NULL);
+		j++;
 	}
+	return (0);
 }
